@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 
 def logout_view(request):
@@ -11,7 +11,7 @@ def logout_view(request):
 
 def register(request):
     """注册新用户"""
-    if request != 'POST':
+    if request.method != 'POST':
         #显示空的注册表单
         form = UserCreationForm()
     else:
@@ -21,8 +21,8 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             #让用户自动登录， 再重定向到主页
-            authenticate_user = authenticate(username=new_user.username, password=request.POST['password'])
-            login(request, authenticate_user)
+            authenticated_user = authenticate(username=new_user.username, password=request.POST['password1'])
+            login(request, authenticated_user)
             return HttpResponseRedirect(reverse('learning_logs:index'))
 
     context = {'form': form}
